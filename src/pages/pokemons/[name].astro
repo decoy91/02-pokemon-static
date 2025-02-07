@@ -1,0 +1,16 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from "../../layouts/Layout.astro";
+export const getStaticPaths = (() => {
+    
+    return [{
+        params:{name: 'bulbasaur'}
+    }];
+}) satisfies GetStaticPaths;
+
+const { name } = Astro.params;
+---
+
+<Layout title="Algún Pókemon">
+    <h1 class="text-3xl capitalize">{ name }</h1>
+</Layout> 
