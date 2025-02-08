@@ -1,15 +1,19 @@
 ---
 import type { GetStaticPaths } from "astro";
-import Layout from "../../layouts/Layout.astro";
+import type { PokemonListResponse } from "../../interface/pokemon-list.response";
+
 import PokemonCard from "../../components/pokemons/PokemonCard.astro";
-export const getStaticPaths = (() => {
+import Layout from "../../layouts/Layout.astro";
+
+export const getStaticPaths = ( async() => {
+    const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+    const { results } = (await resp.json()) as PokemonListResponse;
+
+    return results.map( pokemon =>({
+        params: {name: pokemon.name},
+        props: {name:pokemon.name, url: pokemon.url},
+    }))
     
-    return [
-        {
-            params:{name: 'bulbasaur'},
-            props:{name:'bulbasaur', url:"https://pokeapi.co/api/v2/pokemon/1/"}
-        }
-    ];
 }) satisfies GetStaticPaths;
 
 const { name } = Astro.params;
@@ -24,12 +28,12 @@ const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pok
     <section class="mt-10 mx-10 flex flex-col justify-center items-center">
         <div>
             <a href="/">Regresar</a>
-            <h1 class="text-5xl capitalize">{ name }</h1>
         </div>
         <PokemonCard 
         name={name}
         url={ url } 
         />
+        <h1 class="text-5xl capitalize">{ name }</h1>
         <audio controls class="mt-5">
             <source src={audioSrc} type="audio/ogg">
             Audio no soportado
