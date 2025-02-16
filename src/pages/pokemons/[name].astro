@@ -5,6 +5,7 @@ import type { PokemonListResponse } from "@interface/pokemon-list.response";
 import PokemonCard from "../../components/pokemons/PokemonCard.astro";
 import Layout from "@layouts/Layout.astro";
 import Title from "@components/shared/Title.astro";
+import { Icon } from "astro-icon/components";
 
 export const getStaticPaths = ( async() => {
     const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
@@ -32,12 +33,20 @@ descripcion=`Info sobre el pókemon ${ name }`
 image={ imageSrc}
 >
     <section class="mt-10 mx-10 flex flex-col justify-center items-center">
-        <div>
-            <button 
-            onclick="history.back()"
-            class="text-blue-500">Regresar</button>
-            <Title> {name} </Title>
+        <div class="flex flex-row">
+            <div>
+                <button 
+                onclick="history.back()"
+                class="text-blue-500">Regresar</button>
+                <Title> {name} </Title>
+            </div>
+    
+            <button id="btn-favorite" class="ml-4">
+                <Icon name="start-outline" size={ 45 } />
+                <Icon class="hidden" name="start-full" size={ 45 } />
+            </button>
         </div>
+
         <PokemonCard 
         name={name}
         url={ url } 
@@ -54,5 +63,9 @@ image={ imageSrc}
     a{
         @reference "../../styles/global.css";
         @apply hover:underline text-blue-600;
+    }
+
+    #btn-favorite{
+        @apply hover:animate-pulse;
     }
 </style>
