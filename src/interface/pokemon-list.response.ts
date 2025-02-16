@@ -1,5 +1,3 @@
-import type { IntegrationResolvedRoute } from "astro";
-
 export interface PokemonListResponse {
     count:    number;
     next:     string;
