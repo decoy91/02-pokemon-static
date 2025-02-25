@@ -7,65 +7,100 @@ import Layout from "@layouts/Layout.astro";
 import Title from "@components/shared/Title.astro";
 import { Icon } from "astro-icon/components";
 
-export const getStaticPaths = ( async() => {
-    const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
-    const { results } = (await resp.json()) as PokemonListResponse;
+export const getStaticPaths = (async () => {
+  const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+  const { results } = (await resp.json()) as PokemonListResponse;
 
-    return results.map( pokemon =>({
-        params: {name: pokemon.name},
-        props: {name:pokemon.name, url: pokemon.url},
-    }))
-    
+  return results.map((pokemon) => ({
+    params: { name: pokemon.name },
+    props: { name: pokemon.name, url: pokemon.url },
+  }));
 }) satisfies GetStaticPaths;
 
 const { name } = Astro.params;
 const { url } = Astro.props;
 
-const id = url.split('/').at(-2);
-const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${ id }.ogg`
-const imageSrc =`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${ id }.png`
-
+const id = url.split("/").at(-2);
+const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 ---
 
-<Layout 
-title=`Pókemon - #${id} ${name}`
-descripcion=`Info sobre el pókemon ${ name }`
-image={ imageSrc}
+<Layout
+  title=`Pókemon - #${id} ${name}`
+  descripcion=`Info sobre el pókemon ${ name }`
+  image={imageSrc}
 >
-    <section class="mt-10 mx-10 flex flex-col justify-center items-center">
-        <div class="flex flex-row">
-            <div>
-                <button 
-                onclick="history.back()"
-                class="text-blue-500">Regresar</button>
-                <Title> {name} </Title>
-            </div>
-    
-            <button id="btn-favorite" class="ml-4">
-                <Icon name="start-outline" size={ 45 } />
-                <Icon class="hidden" name="start-full" size={ 45 } />
-            </button>
-        </div>
+  <section class="mt-10 mx-10 flex flex-col justify-center items-center">
+    <div class="flex flex-row">
+      <div>
+        <button onclick="history.back()" class="text-blue-500">Regresar</button>
+        <Title> {name} </Title>
+      </div>
 
-        <PokemonCard 
-        name={name}
-        url={ url } 
-        isBig={true}
-        />
-        <audio controls class="mt-5">
-            <source src={audioSrc} type="audio/ogg">
-            Audio no soportado
-        </audio>
-    </section>
-</Layout> 
+      <button id="btn-favorite" class="ml-4" data-name={name} data-id={id}>
+        <Icon name="start-outline" size={45} />
+        <Icon class="hidden" name="start-full" size={45} />
+      </button>
+    </div>
+
+    <PokemonCard name={name} url={url} isBig={true} />
+    <audio controls class="mt-5">
+      <source src={audioSrc} type="audio/ogg" />
+      Audio no soportado
+    </audio>
+  </section>
+</Layout>
+
+<script>
+  interface FavoritePokemon {
+    name: string;
+    id: number;
+  }
+
+  //   document.addEventListener("astro:before-preparation", () => {
+  //     console.log("before-preparation");
+  //   });
+
+  //   document.addEventListener("astro:after-preparation", () => {
+  //     console.log("after-preparation");
+  //   });
+
+  //   document.addEventListener("astro:before-swap", () => {
+  //     console.log("before-swap");
+  //   });
+
+  //   document.addEventListener("astro:after-swap", () => {
+  //     console.log("after-swap");
+  //   });
+
+  //   document.addEventListener("astro:page-load", () => {
+  //     console.log("Hola");
+  //   });
+
+  const handlePageLoad = () => {
+    const btnFavorite = document.querySelector(
+      "#btn-favorite"
+    ) as HTMLButtonElement;
+    const name = btnFavorite.dataset.name;
+    const id = btnFavorite.dataset.id;
+
+    if (!btnFavorite) return; //si el boton no existe no hace nada
+
+    btnFavorite.addEventListener("click", () => {
+      console.log({ name, id });
+    });
+  };
+
+  document.addEventListener("astro:page-load",handlePageLoad);
+</script>
 
 <style>
-    a{
-        @reference "../../styles/global.css";
-        @apply hover:underline text-blue-600;
-    }
+  a {
+    @reference "../../styles/global.css";
+    @apply hover:underline text-blue-600;
+  }
 
-    #btn-favorite{
-        @apply hover:animate-pulse;
-    }
+  #btn-favorite {
+    @apply hover:animate-pulse;
+  }
 </style>
