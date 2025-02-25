@@ -88,6 +88,8 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
     ) as HTMLButtonElement;
     const name = btnFavorite.dataset.name ?? '';
     const id = btnFavorite.dataset.id ?? '';
+    const isFavorite = favoritePokemons.some(fav => fav.name === name);
+
 
     const heartOutline = btnFavorite.querySelector(
       "[data-outline]"
@@ -97,7 +99,12 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
         "[data-full]"
     ) as HTMLElement;
 
-    if (!btnFavorite) return; //si el boton no existe no hace nada
+    if(isFavorite){
+        heartOutline.classList.add('hidden');
+        heartFull.classList.remove('hidden');
+    }
+
+    //if (!btnFavorite) return; //si el boton no existe no hace nada
 
     const toggleFavorite = () => {
         const isFavorite = favoritePokemons.some(fav => fav.name === name);
