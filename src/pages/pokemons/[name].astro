@@ -38,8 +38,8 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
       </div>
 
       <button id="btn-favorite" class="ml-4" data-name={name} data-id={id}>
-        <Icon name="start-outline" size={45} />
-        <Icon class="hidden" name="start-full" size={45} />
+        <Icon data-outline name="start-outline" size={45} />
+        <Icon data-full class="hidden" name="start-full" size={45} />
       </button>
     </div>
 
@@ -78,20 +78,54 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
   //   });
 
   const handlePageLoad = () => {
+    let favoritePokemons: FavoritePokemon[] = JSON.parse(
+        localStorage.getItem('favorites') ?? '[]'
+    );
+
+
     const btnFavorite = document.querySelector(
       "#btn-favorite"
     ) as HTMLButtonElement;
-    const name = btnFavorite.dataset.name;
-    const id = btnFavorite.dataset.id;
+    const name = btnFavorite.dataset.name ?? '';
+    const id = btnFavorite.dataset.id ?? '';
+
+    const heartOutline = btnFavorite.querySelector(
+      "[data-outline]"
+    ) as HTMLElement;
+
+    const heartFull = btnFavorite.querySelector(
+        "[data-full]"
+    ) as HTMLElement;
 
     if (!btnFavorite) return; //si el boton no existe no hace nada
 
-    btnFavorite.addEventListener("click", () => {
-      console.log({ name, id });
+    const toggleFavorite = () => {
+        const isFavorite = favoritePokemons.some(fav => fav.name === name);
+
+        if (isFavorite)
+    {
+        //remover
+        favoritePokemons = favoritePokemons.filter( fav => fav.name !== name );
+    }else{
+        //add
+        favoritePokemons.push({
+            id: +id,
+            name: name
+        })
+    }
+
+    localStorage.setItem('favorites', JSON.stringify(favoritePokemons));
+
+    };
+
+    btnFavorite.addEventListener("click", () => {      
+        heartOutline.classList.toggle('hidden');
+        heartFull.classList.toggle('hidden');
+        toggleFavorite();
     });
   };
 
-  document.addEventListener("astro:page-load",handlePageLoad);
+  document.addEventListener("astro:page-load", handlePageLoad);
 </script>
 
 <style>
